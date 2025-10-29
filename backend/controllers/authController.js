@@ -14,8 +14,8 @@ export const registerUser = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ error: "User already exists" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword, role });
+    // Pass plaintext password; User model handles hashing
+    const user = await User.create({ name, email, password, role });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "7d",
@@ -76,7 +76,7 @@ export const updateProfile = async (req, res) => {
     const { name, email, password, bio, profileImage } = req.body;
     if (name) user.name = name;
     if (email) user.email = email;
-    if (password) user.password = await bcrypt.hash(password, 10);
+    if (password) user.password = password; // Model will hash it automatically
     if (bio) user.bio = bio;
     if (profileImage) user.profileImage = profileImage;
 
