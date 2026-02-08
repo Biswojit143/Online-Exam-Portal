@@ -4,21 +4,24 @@ import {
   loginUser,
   getProfile,
   updateProfile,
+  verifyAuth,
 } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
-console.log("✅ authRoutes.js loaded successfully");
-
-// Register (Student / Teacher)
 router.post("/register", registerUser);
-
-// Login (All roles)
 router.post("/login", loginUser);
 
-// Profile (All roles)
+router.get("/verify", protect, verifyAuth);
 router.get("/profile", protect, getProfile);
-router.put("/profile", protect, updateProfile);
+
+router.put(
+  "/profile",
+  protect,
+  upload.single("profileImage"),
+  updateProfile
+);
 
 export default router;
